@@ -1,15 +1,25 @@
-interface Role {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-}
+import { gql } from "@apollo/client";
 
 export interface User {
   id: string;
-  username: string;
-  email: string;
-  confirmed: boolean;
-  blocked: boolean;
-  role: Role;
+  firstName: string;
+  lastName: string;
 }
+
+export interface UserQueryVars {
+  id: string;
+}
+
+export interface UserQueryData {
+  user: User;
+}
+
+export const GET_USER_QUERY = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      lastName
+    }
+  }
+`;

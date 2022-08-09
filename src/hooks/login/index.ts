@@ -11,3 +11,9 @@ export function useIsAuthenticated() {
   const claims = jwtDecode<TokeClaims>(token);
   return !!token && Date.now() < claims.exp * 1000;
 }
+
+export function useUserIdFromToken() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const claims = jwtDecode<TokeClaims>(token);
+  return claims.id;
+}
