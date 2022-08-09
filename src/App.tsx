@@ -1,6 +1,7 @@
 import { Header } from "@/components/header";
 import { PrivateRoute } from "@/components/privateRoute";
 import { Account } from "@/pages/account";
+import { NotFound } from "@/pages/errors";
 import { Login } from "@/pages/login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -18,6 +19,7 @@ export const App = () => {
             <Route path="/account" element={<Account />} />
           </Route>
           <Route path="/login" element={<Login />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <ToastContainer autoClose={5000} closeOnClick pauseOnHover pauseOnFocusLoss />
       </main>
