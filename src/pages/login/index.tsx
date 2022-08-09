@@ -1,12 +1,15 @@
-import { useLoginMutation } from "@/hooks/useLogin";
+import { useIsAuthenticated, useLoginMutation } from "@/hooks/login";
+import { TOKEN_KEY } from "@/hooks/login/definition";
 import { formInitialState, formSchema, LoginForm } from "@/pages/login/definition";
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
 import { useCallback } from "react";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import "@/pages/login/styles.scss";
 
 export const Login = () => {
+  const isAuthenticated = useIsAuthenticated();
   const [login, { loading }] = useLoginMutation();
 
   const handleSubmit = useCallback(
@@ -16,8 +19,13 @@ export const Login = () => {
         const { data } = await login({
           variables: { input: { identifier: values.email, password: values.password, provider: "local" } },
         });
-        console.log({ data });
-        resetForm();
+
+        if (data?.login?.jwt) {
+          localStorage.setItem(TOKEN_KEY, data.login.jwt);
+          resetForm();
+        } else {
+          throw new Error("Login failed");
+        }
       } catch (error) {
         toast.error(`Something went wrong, please try again.`);
       }
@@ -26,6 +34,10 @@ export const Login = () => {
   );
 
   const renderMessage = (message: string) => <p className="login-form_field--error">{message}</p>;
+
+  if (isAuthenticated) {
+    return <Navigate to="/account" replace />;
+  }
 
   return (
     <Formik initialValues={formInitialState} validationSchema={formSchema} onSubmit={handleSubmit}>

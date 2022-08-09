@@ -1,3 +1,5 @@
+import { PrivateRoute } from "@/components/privateRoute";
+import { Account } from "@/pages/account";
 import { Login } from "@/pages/login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -10,7 +12,10 @@ export const App = () => {
     <main className="app">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<PrivateRoute />}>
+            <Route path="/account" element={<Account />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer autoClose={5000} closeOnClick pauseOnHover pauseOnFocusLoss />

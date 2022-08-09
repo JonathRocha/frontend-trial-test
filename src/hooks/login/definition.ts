@@ -1,4 +1,3 @@
-import { User } from "@/hooks/useUser/definition";
 import { gql } from "@apollo/client";
 
 interface LoginVars {
@@ -9,7 +8,6 @@ interface LoginVars {
 
 interface LoginData {
   jwt: string;
-  user: User;
 }
 
 export interface LoginMutationData {
@@ -20,23 +18,18 @@ export interface LoginMutationVars {
   input: LoginVars;
 }
 
+export interface TokeClaims {
+  id: number;
+  exp: number;
+  iat: number;
+}
+
+export const TOKEN_KEY = "frontend-trial-token";
+
 export const LOGIN_MUTATION = gql`
   mutation LoginMutation($input: UsersPermissionsLoginInput!) {
     login(input: $input) {
       jwt
-      user {
-        id
-        username
-        email
-        confirmed
-        blocked
-        role {
-          id
-          name
-          description
-          type
-        }
-      }
     }
   }
 `;
