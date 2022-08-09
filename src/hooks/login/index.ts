@@ -8,12 +8,30 @@ export function useLoginMutation(options?: MutationHookOptions<LoginMutationData
 
 export function useIsAuthenticated() {
   const token = localStorage.getItem(TOKEN_KEY);
-  const claims = jwtDecode<TokeClaims>(token);
-  return !!token && Date.now() < claims.exp * 1000;
+  try {
+    const claims = jwtDecode<TokeClaims>(token);
+    return !!token && Date.now() < claims.exp * 1000;
+  } catch (error) {
+    // Invalid token
+    return false;
+  }
 }
 
 export function useUserIdFromToken() {
   const token = localStorage.getItem(TOKEN_KEY);
-  const claims = jwtDecode<TokeClaims>(token);
-  return claims.id;
+  try {
+    const claims = jwtDecode<TokeClaims>(token);
+    return claims.id;
+  } catch (error) {
+    // Invalid token
+    return null;
+  }
+}
+
+export function useLogout() {
+  return {
+    logout: () => {
+      localStorage.removeItem(TOKEN_KEY);
+    },
+  };
 }

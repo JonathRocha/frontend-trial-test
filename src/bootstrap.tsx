@@ -7,10 +7,12 @@ const httpLink = new HttpLink({ uri: process.env.API_URL });
 const authMiddleware = new ApolloLink((operation, forward) => {
   const token = localStorage.getItem(TOKEN_KEY);
   operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : null,
-    },
+    headers: token
+      ? {
+          ...headers,
+          authorization: `Bearer ${token}`,
+        }
+      : headers,
   }));
   return forward(operation);
 });

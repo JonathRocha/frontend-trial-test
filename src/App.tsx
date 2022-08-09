@@ -1,3 +1,4 @@
+import { Header } from "@/components/header";
 import { PrivateRoute } from "@/components/privateRoute";
 import { Account } from "@/pages/account";
 import { Login } from "@/pages/login";
@@ -9,16 +10,17 @@ import "@/App.scss";
 
 export const App = () => {
   return (
-    <main className="app">
-      <BrowserRouter>
+    <BrowserRouter>
+      <Header />
+      <main className="app">
         <Routes>
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/account" element={<Account />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
-      </BrowserRouter>
-      <ToastContainer autoClose={5000} closeOnClick pauseOnHover pauseOnFocusLoss />
-    </main>
+        <ToastContainer autoClose={5000} closeOnClick pauseOnHover pauseOnFocusLoss />
+      </main>
+    </BrowserRouter>
   );
 };
