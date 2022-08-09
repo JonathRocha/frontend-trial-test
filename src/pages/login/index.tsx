@@ -1,7 +1,8 @@
 import { useLoginMutation } from "@/hooks/useLogin";
 import { formInitialState, formSchema, LoginForm } from "@/pages/login/definition";
+import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
 import { useCallback } from "react";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { toast } from "react-toastify";
 
 import "@/pages/login/styles.scss";
 
@@ -12,14 +13,13 @@ export const Login = () => {
     async (values: LoginForm, formikHelpers: FormikHelpers<LoginForm>) => {
       const { resetForm } = formikHelpers;
       try {
-        const { errors, data } = await login({
+        const { data } = await login({
           variables: { input: { identifier: values.email, password: values.password, provider: "local" } },
         });
-
-        console.log({ errors, data });
+        console.log({ data });
         resetForm();
       } catch (error) {
-        console.log({ error });
+        toast.error(`Something went wrong, please try again.`);
       }
     },
     [login],
