@@ -1,12 +1,14 @@
 import { useLoginMutation } from "@/hooks/useLogin";
 import { formInitialState, reducer, fieldsActionMapper } from "@/pages/login/definition";
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useMemo, useReducer } from "react";
 
 import "@/pages/login/styles.scss";
 
 export const Login = () => {
   const [state, dispatch] = useReducer(reducer, formInitialState);
   const [login, { loading }] = useLoginMutation();
+
+  const shouldDisableSubmit = useMemo(() => loading || !state.email || !state.password, [loading, state]);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +59,7 @@ export const Login = () => {
         />
       </div>
 
-      <button className="login-form_button" type="submit" id="login-submit" disabled={loading}>
+      <button className="login-form_button" type="submit" id="login-submit" disabled={shouldDisableSubmit}>
         {loading ? "Loading..." : "Send"}
       </button>
     </form>
