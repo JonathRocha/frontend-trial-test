@@ -1,5 +1,6 @@
 import { useUserIdFromToken } from "@/hooks/login";
 import { useGetUserQuery } from "@/hooks/user";
+import { UnexpectedError } from "@/pages/errors";
 
 import "@/pages/account/styles.scss";
 
@@ -16,7 +17,7 @@ export const Account = () => {
     );
 
   if (error) {
-    return <section className="account">Error</section>;
+    return <UnexpectedError />;
   }
 
   return (
