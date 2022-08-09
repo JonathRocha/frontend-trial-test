@@ -1,67 +1,53 @@
 import { useLoginMutation } from "@/hooks/useLogin";
-import { formInitialState, reducer, fieldsActionMapper } from "@/pages/login/definition";
-import React, { useCallback, useMemo, useReducer } from "react";
+import { formInitialState, formSchema, LoginForm } from "@/pages/login/definition";
+import { useCallback } from "react";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 
 import "@/pages/login/styles.scss";
 
 export const Login = () => {
-  const [state, dispatch] = useReducer(reducer, formInitialState);
   const [login, { loading }] = useLoginMutation();
 
-  const shouldDisableSubmit = useMemo(() => loading || !state.email || !state.password, [loading, state]);
-
   const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    async (values: LoginForm, formikHelpers: FormikHelpers<LoginForm>) => {
+      const { resetForm } = formikHelpers;
       try {
         const { errors, data } = await login({
-          variables: { input: { identifier: state.email, password: state.password, provider: "local" } },
+          variables: { input: { identifier: values.email, password: values.password, provider: "local" } },
         });
 
         console.log({ errors, data });
+        resetForm();
       } catch (error) {
         console.log({ error });
       }
     },
-    [login, state],
+    [login],
   );
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    dispatch({ type: fieldsActionMapper[name], payload: value });
-  }, []);
+  const renderMessage = (message: string) => <p className="login-form_field--error">{message}</p>;
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <legend>Sign in</legend>
+    <Formik initialValues={formInitialState} validationSchema={formSchema} onSubmit={handleSubmit}>
+      <Form className="login-form" noValidate>
+        <legend>Sign in</legend>
 
-      <div className="login-form_field">
-        <label htmlFor="email">E-mail</label>
-        <input
-          className="login-form_field--input"
-          type="email"
-          id="email"
-          name="email"
-          value={state.email}
-          onChange={handleChange}
-        />
-      </div>
+        <div className="login-form_field">
+          <label htmlFor="email">E-mail</label>
+          <Field className="login-form_field--input" type="email" id="email" name="email" />
+          <ErrorMessage name="email" render={renderMessage} />
+        </div>
 
-      <div className="login-form_field">
-        <label htmlFor="password">Password</label>
-        <input
-          className="login-form_field--input"
-          type="password"
-          id="password"
-          name="password"
-          value={state.password}
-          onChange={handleChange}
-        />
-      </div>
+        <div className="login-form_field">
+          <label htmlFor="password">Password</label>
+          <Field className="login-form_field--input" type="password" id="password" name="password" />
+          <ErrorMessage name="password" render={renderMessage} />
+        </div>
 
-      <button className="login-form_button" type="submit" id="login-submit" disabled={shouldDisableSubmit}>
-        {loading ? "Loading..." : "Send"}
-      </button>
-    </form>
+        <button className="login-form_button" type="submit" id="login-submit" disabled={loading}>
+          {loading ? "Loading..." : "Send"}
+        </button>
+      </Form>
+    </Formik>
   );
 };
