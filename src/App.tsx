@@ -1,7 +1,16 @@
+import { Login } from "@/pages/login";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import "@/App.scss";
+
 export const App = () => {
   return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
+    <main className="app">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
+    </main>
   );
 };
