@@ -3,13 +3,13 @@ import { LanguageContext } from "@/contexts/language";
 import { useCallback, useContext } from "react";
 
 export const LanguageSwitcher = () => {
-  const [lang, setLang] = useContext(LanguageContext);
+  const { language, changeLanguage } = useContext(LanguageContext);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      event.target.checked ? setLang("PT") : setLang("EN");
+      changeLanguage(event.target.checked ? "PT" : "EN");
     },
-    [setLang],
+    [changeLanguage],
   );
 
   return (
@@ -18,7 +18,7 @@ export const LanguageSwitcher = () => {
         id="language-toggle"
         className="check-toggle check-toggle-round-flat"
         type="checkbox"
-        checked={lang === "PT"}
+        checked={language === "PT"}
         onChange={handleChange}
       />
       <label htmlFor="language-toggle"></label>

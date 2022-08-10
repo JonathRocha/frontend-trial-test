@@ -14,10 +14,10 @@ import "@/pages/login/styles.scss";
 export const Login = () => {
   const isAuthenticated = useIsAuthenticated();
   const [login, { loading }] = useLoginMutation();
-  const [lang] = useContext(LanguageContext);
-  const localizedTexts = strings[lang];
+  const { language } = useContext(LanguageContext);
+  const localizedTexts = strings[language];
 
-  // Formik does not update the messages when the language changes.
+  // TODO: Investigate why Formik does not update the messages when the language changes after the messages are rendered.
   const formSchema = useMemo(
     () =>
       yup.object().shape({

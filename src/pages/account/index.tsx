@@ -10,8 +10,8 @@ import "@/pages/account/styles.scss";
 export const Account = () => {
   const userId = useUserIdFromToken();
   const { data, loading, error } = useGetUserQuery({ variables: { id: String(userId) } });
-  const [lang] = useContext(LanguageContext);
-  const localizedTexts = strings[lang];
+  const { language } = useContext(LanguageContext);
+  const localizedTexts = strings[language];
 
   if (loading)
     return (
