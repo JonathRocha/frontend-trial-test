@@ -17,26 +17,28 @@ describe("Page Account", () => {
     lastName: "Doe",
   };
 
+  const useGetUserQueryStubReturn = {
+    loading: false,
+    data: { user },
+    error: null,
+    client: null,
+    called: false,
+    observable: null,
+    refetch: jest.fn(),
+    startPolling: jest.fn(),
+    stopPolling: jest.fn(),
+    updateQuery: jest.fn(),
+    fetchMore: jest.fn(),
+    reobserve: jest.fn(),
+    subscribeToMore: jest.fn(),
+    networkStatus: 0,
+    variables: null,
+  };
+
   beforeEach(() => {
     useContextStub.mockImplementation(() => ({ language: "EN" }));
     useUserIdFromTokenStub.mockImplementation(() => 1);
-    useGetUserQueryStub.mockImplementation(() => ({
-      loading: false,
-      data: { user },
-      error: null,
-      client: null,
-      called: false,
-      observable: null,
-      refetch: jest.fn(),
-      startPolling: jest.fn(),
-      stopPolling: jest.fn(),
-      updateQuery: jest.fn(),
-      fetchMore: jest.fn(),
-      reobserve: jest.fn(),
-      subscribeToMore: jest.fn(),
-      networkStatus: 0,
-      variables: null,
-    }));
+    useGetUserQueryStub.mockImplementation(() => useGetUserQueryStubReturn);
   });
 
   it("Should render without crashing", () => {
@@ -69,5 +71,16 @@ describe("Page Account", () => {
 
     expect(firstName.getAttribute("value")).toBe(user.firstName);
     expect(lastName.getAttribute("value")).toBe(user.lastName);
+  });
+
+  it("Should render loading message if user query is loading", () => {
+    useGetUserQueryStub.mockReturnValue({ ...useGetUserQueryStubReturn, loading: true });
+
+    render(<Account />);
+
+    const texts = strings["EN"];
+
+    const loading = screen.queryByText(texts.loading);
+    expect(loading).toBeInTheDocument();
   });
 });
