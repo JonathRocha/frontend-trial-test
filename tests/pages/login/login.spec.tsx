@@ -23,4 +23,21 @@ describe("Page Login", () => {
     const formTitle = screen.getByText(texts.title);
     expect(formTitle).toBeInTheDocument();
   });
+
+  it("Should contain texts with localization", () => {
+    useContextStub.mockReturnValue({ language: "PT" });
+
+    render(<Login />);
+
+    const texts = strings["PT"];
+    const formTitle = screen.getByText(texts.title);
+    const formEmail = screen.getByLabelText(texts.inputs.email.label);
+    const formPassword = screen.getByLabelText(texts.inputs.password.label);
+    const formSubmit = screen.getByText(texts.buttons.submit);
+
+    expect(formTitle).toBeInTheDocument();
+    expect(formEmail).toBeInTheDocument();
+    expect(formPassword).toBeInTheDocument();
+    expect(formSubmit).toBeInTheDocument();
+  });
 });
