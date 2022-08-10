@@ -3,12 +3,16 @@ import * as userHooks from "@/hooks/user";
 import { User } from "@/hooks/user/definition";
 import { Account } from "@/pages/account";
 import { strings } from "@/pages/account/strings";
+import { strings as errorStrings } from "@/pages/errors/strings";
+import { ApolloError } from "@apollo/client";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
 const useContextStub = jest.spyOn(React, "useContext");
 const useUserIdFromTokenStub = jest.spyOn(loginHooks, "useUserIdFromToken");
 const useGetUserQueryStub = jest.spyOn(userHooks, "useGetUserQuery");
+
+jest.mock("react-router-dom");
 
 describe("Page Account", () => {
   const user: User = {
@@ -82,5 +86,16 @@ describe("Page Account", () => {
 
     const loading = screen.queryByText(texts.loading);
     expect(loading).toBeInTheDocument();
+  });
+
+  it("Should render unexpected error page if user query has error", () => {
+    useGetUserQueryStub.mockReturnValue({ ...useGetUserQueryStubReturn, error: new ApolloError({ clientErrors: [] }) });
+
+    render(<Account />);
+
+    const texts = errorStrings["EN"];
+
+    const error = screen.queryByText(texts.unexpected.description);
+    expect(error).toBeInTheDocument();
   });
 });
