@@ -1,12 +1,13 @@
+import * as loginHooks from "@/hooks/login";
 import { Login } from "@/pages/login";
 import { strings } from "@/pages/login/strings";
-import * as loginHooks from "@/hooks/login";
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
 const useContextStub = jest.spyOn(React, "useContext");
 const useIsAuthenticatedStub = jest.spyOn(loginHooks, "useIsAuthenticated");
 const useLoginMutationStub = jest.spyOn(loginHooks, "useLoginMutation");
+const loginMutationStub = jest.fn();
 
 jest.mock("react-router-dom");
 
@@ -15,7 +16,7 @@ describe("Page Login", () => {
     useContextStub.mockImplementation(() => ({ language: "EN" }));
     useIsAuthenticatedStub.mockImplementation(() => false);
     useLoginMutationStub.mockImplementation(() => [
-      jest.fn(),
+      loginMutationStub,
       { loading: false, data: null, error: null, reset: jest.fn(), called: false, client: null },
     ]);
   });
@@ -51,5 +52,24 @@ describe("Page Login", () => {
 
     const inputEmail = screen.queryByTestId("email");
     expect(inputEmail).not.toBeInTheDocument();
+  });
+
+  it("Should call login mutation when submitting form with correct values", async () => {
+    const email = "test@gmail.com";
+    const password = "123456";
+
+    render(<Login />);
+
+    act(() => {
+      fireEvent.change(screen.getByTestId("email"), { target: { value: email } });
+      fireEvent.change(screen.getByTestId("password"), { target: { value: password } });
+      fireEvent.click(screen.getByTestId("login-submit"));
+    });
+
+    await waitFor(() => {
+      expect(loginMutationStub).toHaveBeenCalledWith({
+        variables: { input: { identifier: email, password: password, provider: "local" } },
+      });
+    });
   });
 });
