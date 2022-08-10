@@ -1,20 +1,23 @@
 import { Login } from "@/pages/login";
 import { strings } from "@/pages/login/strings";
+import * as loginHooks from "@/hooks/login";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
 const useContextStub = jest.spyOn(React, "useContext");
+const useIsAuthenticatedStub = jest.spyOn(loginHooks, "useIsAuthenticated");
+const useLoginMutationStub = jest.spyOn(loginHooks, "useLoginMutation");
 
 jest.mock("react-router-dom");
-
-jest.mock("@/hooks/login", () => ({
-  useIsAuthenticated: jest.fn(() => false),
-  useLoginMutation: jest.fn(() => [jest.fn(), { loading: false }]),
-}));
 
 describe("Page Login", () => {
   beforeEach(() => {
     useContextStub.mockImplementation(() => ({ language: "EN" }));
+    useIsAuthenticatedStub.mockImplementation(() => false);
+    useLoginMutationStub.mockImplementation(() => [
+      jest.fn(),
+      { loading: false, data: null, error: null, reset: jest.fn(), called: false, client: null },
+    ]);
   });
 
   it("Should render without crashing", () => {
@@ -39,5 +42,14 @@ describe("Page Login", () => {
     expect(formEmail).toBeInTheDocument();
     expect(formPassword).toBeInTheDocument();
     expect(formSubmit).toBeInTheDocument();
+  });
+
+  it("Should redirect to account page and not render login if authenticated", () => {
+    useIsAuthenticatedStub.mockReturnValue(true);
+
+    render(<Login />);
+
+    const inputEmail = screen.queryByTestId("email");
+    expect(inputEmail).not.toBeInTheDocument();
   });
 });
