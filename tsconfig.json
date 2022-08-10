@@ -16,12 +16,13 @@
     "downlevelIteration": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "src",
-    "rootDirs": ["src"],
+    "rootDirs": ["src", "tests"],
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@/tests/*": ["../tests/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "tests"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
