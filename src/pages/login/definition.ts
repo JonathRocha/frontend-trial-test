@@ -1,4 +1,24 @@
-import * as yup from "yup";
+export interface StringsLocalization {
+  title: string;
+  inputs: {
+    email: {
+      label: string;
+      required: string;
+      invalid: string;
+    };
+    password: {
+      label: string;
+      required: string;
+    };
+  };
+  buttons: {
+    submit: string;
+    loading: string;
+  };
+  errors: {
+    unexpected: string;
+  };
+}
 
 export interface LoginForm {
   email: string;
@@ -9,8 +29,3 @@ export const formInitialState: LoginForm = {
   email: "",
   password: "",
 };
-
-export const formSchema = yup.object().shape({
-  email: yup.string().email("Email must be a valid email").required("Email is required"),
-  password: yup.string().required("Password is required"),
-});

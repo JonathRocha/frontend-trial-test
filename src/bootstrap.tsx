@@ -1,4 +1,5 @@
 import { App } from "@/App";
+import { LanguageContextProvider } from "@/contexts/language";
 import { TOKEN_KEY } from "@/hooks/login/definition";
 import { ApolloClient, ApolloLink, ApolloProvider, concat, HttpLink, InMemoryCache } from "@apollo/client";
 import { createRoot } from "react-dom/client";
@@ -25,7 +26,9 @@ const client = new ApolloClient({
 const root = createRoot(document.getElementById("root"));
 
 root.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <LanguageContextProvider>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </LanguageContextProvider>,
 );

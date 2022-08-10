@@ -1,16 +1,31 @@
+import { LanguageContext } from "@/contexts/language";
 import { useIsAuthenticated, useLoginMutation } from "@/hooks/login";
 import { TOKEN_KEY } from "@/hooks/login/definition";
-import { formInitialState, formSchema, LoginForm } from "@/pages/login/definition";
+import { formInitialState, LoginForm } from "@/pages/login/definition";
+import { strings } from "@/pages/login/strings";
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
-import { useCallback } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import * as yup from "yup";
 
 import "@/pages/login/styles.scss";
 
 export const Login = () => {
   const isAuthenticated = useIsAuthenticated();
   const [login, { loading }] = useLoginMutation();
+  const [lang] = useContext(LanguageContext);
+  const localizedTexts = strings[lang];
+
+  // Formik does not update the messages when the language changes.
+  const formSchema = useMemo(
+    () =>
+      yup.object().shape({
+        email: yup.string().email(localizedTexts.inputs.email.invalid).required(localizedTexts.inputs.email.required),
+        password: yup.string().required(localizedTexts.inputs.password.required),
+      }),
+    [localizedTexts],
+  );
 
   const handleSubmit = useCallback(
     async (values: LoginForm, formikHelpers: FormikHelpers<LoginForm>) => {
@@ -27,10 +42,10 @@ export const Login = () => {
           throw new Error("Login failed");
         }
       } catch (error) {
-        toast.error(`Something went wrong, please try again.`);
+        toast.error(localizedTexts.errors.unexpected);
       }
     },
-    [login],
+    [login, localizedTexts],
   );
 
   const renderMessage = (message: string) => <p className="login-form_field--error">{message}</p>;
@@ -42,22 +57,22 @@ export const Login = () => {
   return (
     <Formik initialValues={formInitialState} validationSchema={formSchema} onSubmit={handleSubmit}>
       <Form className="login-form" noValidate>
-        <legend>Sign in</legend>
+        <legend>{localizedTexts.title}</legend>
 
         <div className="login-form_field">
-          <label htmlFor="email">E-mail</label>
+          <label htmlFor="email">{localizedTexts.inputs.email.label}</label>
           <Field className="login-form_field--input" type="email" id="email" name="email" />
           <ErrorMessage name="email" render={renderMessage} />
         </div>
 
         <div className="login-form_field">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{localizedTexts.inputs.password.label}</label>
           <Field className="login-form_field--input" type="password" id="password" name="password" />
           <ErrorMessage name="password" render={renderMessage} />
         </div>
 
         <button className="login-form_button" type="submit" id="login-submit" disabled={loading}>
-          {loading ? "Loading..." : "Send"}
+          {loading ? localizedTexts.buttons.loading : localizedTexts.buttons.submit}
         </button>
       </Form>
     </Formik>

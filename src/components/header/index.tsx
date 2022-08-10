@@ -1,3 +1,4 @@
+import { LanguageSwitcher } from "@/components/languageSwitcher";
 import { useIsAuthenticated, useLogout } from "@/hooks/login";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,15 +15,18 @@ export const Header = () => {
     navigate("/login", { replace: true });
   }, [logout, navigate]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // if (!isAuthenticated) {
+  //   return null;
+  // }
 
   return (
     <header className="header">
-      <button className="header_logout" type="button" onClick={handleLogout}>
-        Logout
-      </button>
+      <LanguageSwitcher />
+      {isAuthenticated && (
+        <button className="header_logout" type="button" onClick={handleLogout}>
+          Logout
+        </button>
+      )}
     </header>
   );
 };

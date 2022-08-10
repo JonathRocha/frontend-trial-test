@@ -1,7 +1,13 @@
 import { useIsAuthenticated } from "@/hooks/login";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 export const PrivateRoute = () => {
+  const { pathname } = useLocation();
   const isAuthorized = useIsAuthenticated();
-  return isAuthorized ? <Outlet /> : <Navigate to="/login" replace />;
+
+  if (isAuthorized) {
+    return pathname === "/" ? <Navigate to="/account" /> : <Outlet />;
+  }
+
+  return <Navigate to="/login" replace />;
 };
