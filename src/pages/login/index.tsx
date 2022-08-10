@@ -3,7 +3,7 @@ import { useIsAuthenticated, useLoginMutation } from "@/hooks/login";
 import { TOKEN_KEY } from "@/hooks/login/definition";
 import { formInitialState, LoginForm } from "@/pages/login/definition";
 import { strings } from "@/pages/login/strings";
-import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
+import { FormikHelpers, useFormik } from "formik";
 import { useCallback, useContext, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -48,6 +48,12 @@ export const Login = () => {
     [login, localizedTexts],
   );
 
+  const formik = useFormik({
+    initialValues: formInitialState,
+    validationSchema: formSchema,
+    onSubmit: handleSubmit,
+  });
+
   const renderMessage = (message: string) => <p className="login-form_field--error">{message}</p>;
 
   if (isAuthenticated) {
@@ -55,26 +61,39 @@ export const Login = () => {
   }
 
   return (
-    <Formik initialValues={formInitialState} validationSchema={formSchema} onSubmit={handleSubmit}>
-      <Form className="login-form" noValidate>
-        <legend>{localizedTexts.title}</legend>
+    <form className="login-form" onSubmit={formik.handleSubmit} noValidate>
+      <legend>{localizedTexts.title}</legend>
 
-        <div className="login-form_field">
-          <label htmlFor="email">{localizedTexts.inputs.email.label}</label>
-          <Field className="login-form_field--input" type="email" id="email" name="email" />
-          <ErrorMessage name="email" render={renderMessage} />
-        </div>
+      <div className="login-form_field">
+        <label htmlFor="email">{localizedTexts.inputs.email.label}</label>
+        <input
+          className="login-form_field--input"
+          type="email"
+          id="email"
+          name="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+        {formik.errors.email && formik.touched.email ? renderMessage(formik.errors.email) : null}
+      </div>
 
-        <div className="login-form_field">
-          <label htmlFor="password">{localizedTexts.inputs.password.label}</label>
-          <Field className="login-form_field--input" type="password" id="password" name="password" />
-          <ErrorMessage name="password" render={renderMessage} />
-        </div>
+      <div className="login-form_field">
+        <label htmlFor="password">{localizedTexts.inputs.password.label}</label>
+        <input
+          className="login-form_field--input"
+          type="password"
+          id="password"
+          name="password"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+        {formik.errors.password && formik.touched.password ? renderMessage(formik.errors.password) : null}
+      </div>
 
-        <button className="login-form_button" type="submit" id="login-submit" disabled={loading}>
-          {loading ? localizedTexts.buttons.loading : localizedTexts.buttons.submit}
-        </button>
-      </Form>
-    </Formik>
+      <button className="login-form_button" type="submit" id="login-submit" disabled={loading}>
+        {loading ? localizedTexts.buttons.loading : localizedTexts.buttons.submit}
+      </button>
+    </form>
   );
 };
