@@ -60,4 +60,14 @@ describe("Page Account", () => {
     expect(firstName).toBeInTheDocument();
     expect(lastName).toBeInTheDocument();
   });
+
+  it("Should render user details returned by user query", () => {
+    render(<Account />);
+
+    const firstName = screen.queryByTestId("firstName");
+    const lastName = screen.queryByTestId("lastName");
+
+    expect(firstName.getAttribute("value")).toBe(user.firstName);
+    expect(lastName.getAttribute("value")).toBe(user.lastName);
+  });
 });
